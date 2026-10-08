@@ -1,0 +1,98 @@
+all checks passed
+
+=== step1_book.py
+   sell  $40.10  Di 500
+   sell  $40.05  Cy 300
+   sell  $40.02  Ben 200
+   sell  $40.02  Ana 100
+   ----
+   buy   $39.98  Eve 200
+   buy   $39.97  Fay 100
+   buy   $39.95  Gus 400
+   buy   $39.90  Hal 300
+
+best buyer $39.98, best seller $40.02, gap 4 cents, trades so far: 0
+
+=== step2_match.py
+Ivy: buy 250 up to $40.05
+   TRADE 100 shares at $40.02   (Ivy buys from Ana)
+   TRADE 150 shares at $40.02   (Ivy buys from Ben)
+   Ivy was ready to pay $10012.50 and paid $10005.00: $7.50 less
+Jon: buy 400 up to $40.03
+   TRADE 50 shares at $40.02   (Jon buys from Ben)
+   Jon got 50 shares; his other 350 wait in the book
+
+   sell  $40.10  Di 500
+   sell  $40.05  Cy 300
+   ----
+   buy   $40.03  Jon 350
+   buy   $39.98  Eve 200
+   buy   $39.97  Fay 100
+   buy   $39.95  Gus 400
+   buy   $39.90  Hal 300
+
+last price $40.02, best buyer $40.03, best seller $40.05
+
+=== step3_priority.py
+Ana and Ben both sell 100 at $40.02, Ana first. A buyer takes 150:
+   Ana sells 100
+   Ben sells 50
+
+referee, 10,000 random orders        trades   queue jumps   crossed book   lost shares
+the book                               4869             0              0             0
+one character changed                  4897          1985              0             0
+
+=== step4_market.py
+buy at any price   shares bought   average price   last share cost   paid above $40.02
+            100             100         $40.020            $40.02               $0.00
+           1000            1000         $40.035            $40.05              $15.00
+           5000            5000         $40.155            $40.29             $675.00
+           8000            5000         $40.155            $40.29             $675.00
+the order for 8,000 found only 5,000 shares. The other 3,000 found no seller and were dropped.
+
+a new seller at $40.00: best seller $40.00
+the seller cancels:     best seller $40.02, trades: 0
+the only buyer cancels, then somebody sells 100 at any price: 0 trades. There is nobody to sell to.
+
+=== step5_fast.py
+100,000 events          seconds   events per second   trades   fingerprint of all trades
+plain lists                6.52              15,346    39992   9d15c22b2679
+one queue per price        0.06           1,776,795    39992   9d15c22b2679
+same trades: True. 116 times faster (the seconds change with the machine).
+orders waiting in the plain book at the end: 18,550
+
+=== step6_market.py
+one hour, 20 makers, takers arriving at random
+orders sent 133,130, trades 9,063, shares traded 1,821,100
+lowest trade $39.83, highest $40.04, last $39.89
+average gap between best buyer and best seller: 1.7 cents
+stop-loss orders fired: 0
+the whole hour took 0.14 seconds to run
+
+=== step7_crash.py
+seconds after the seller starts: first maker leaves 26, last maker leaves 33, first trade at 1 cent 33 (the trade before it: $39.56)
+last trade below $16: 206 seconds after the start
+lowest trade $0.01, highest trade $100000.00, last trade of the hour $39.76
+shares sold at 1 cent: 74,400. Shares bought at $100,000: 19,900
+trades more than 60 % away from $40: 943
+the large seller: 120,000 shares for $2623451.00, $21.86 a share
+stop-loss orders fired: 300. They sold 3,000 shares for $67243.00; 82,600 shares found no buyer
+
+=== step8_band.py
+--- no band
+lowest trade $0.01, highest trade $100000.00, last trade of the hour $39.76
+shares sold at 1 cent: 74,400. Shares bought at $100,000: 19,900
+trades more than 60 % away from $40: 943
+the large seller: 120,000 shares for $2623451.00, $21.86 a share
+stop-loss orders fired: 300. They sold 3,000 shares for $67243.00; 82,600 shares found no buyer
+pauses: 0
+
+--- with the band
+lowest trade $39.49, highest trade $40.01, last trade of the hour $39.85
+shares sold at 1 cent: 0. Shares bought at $100,000: 0
+trades more than 60 % away from $40: 0
+the large seller: 120,000 shares for $4767488.00, $39.73 a share
+stop-loss orders fired: 24. They sold 3,800 shares for $150420.00; 3,000 shares found no buyer
+pauses: 1, 47 seconds after the seller starts
+
+the large seller got 1.8 times more money with the band
